@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Font Awesome icon cdn -->
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous">
+<title>Popup Form | By SAlman</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<input type="checkbox" id="show">
+<label for="show" class="show-btn">
+<i class="fab fa-facebook-messenger"></i>
+</label>
+<div class="wrapper">
+    <h5>Hi there - Online   <span class="status-dot"></span>&nbsp&nbsp(9:30am - 6:30pm)</h5>
+    <p>Please fill form below to start chatting with the next available agent.</p>
+    <form id="chat-form">
+        <input type="text" id="name" name="name" placeholder="Your Name" required>
+        <span class="error-message" id="name-error"></span>
+        
+        <input type="email" id="email" name="email" placeholder="Your Email" required>
+        <span class="error-message" id="email-error"></span>
+        
+        <input type="text" id="query" name="query" placeholder="Enter your queries" required>
+        <span class="error-message" id="query-error"></span>
+        
+        <button type="submit">Start Chat</button>
+    </form>
+
+    <div class="chat-wrapper" id="conversation">
+        <div id="chat-messages">
+            <!-- Chat messages will be dynamically populated -->
+        </div>
+        <div class="message-input-container">
+            <input type="text" id="message-input" placeholder="Type your message...">
+            <button id="send-message-btn">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('chat-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form submission
+    
+    var name = document.getElementById('name').value;
+    var email = document.getElementById('email').value;
+    var query = document.getElementById('query').value;
+    
+    // Validate inputs
+    var valid = true;
+    
+    if (name.trim() === '') {
+        document.getElementById('name-error').textContent = 'Please enter your name.';
+        valid = false;
+    } else {
+        document.getElementById('name-error').textContent = '';
+    }
+    
+    if (email.trim() === '') {
+        document.getElementById('email-error').textContent = 'Please enter your email.';
+        valid = false;
+    } else if (!isValidEmail(email)) {
+        document.getElementById('email-error').textContent = 'Please enter a valid email address.';
+        valid = false;
+    } else {
+        document.getElementById('email-error').textContent = '';
+    }
+    
+    if (query.trim() === '') {
+        document.getElementById('query-error').textContent = 'Please enter your query.';
+        valid = false;
+    } else {
+        document.getElementById('query-error').textContent = '';
+    }
+    
+    if (valid) {
+        // Hide form and show chat interface
+        document.getElementById('chat-form').style.display = 'none';
+        document.querySelector('.wrapper > p').style.display = 'none';
+        document.getElementById('conversation').style.display = 'block';
+
+        // Show welcome message with user's name
+        showBotMessage(`Hi ${name}! Welcome to our chat. How can I assist you today?`);
+    }
+});
+
+document.getElementById('send-message-btn').addEventListener('click', function() {
+    sendMessage();
+});
+
+document.getElementById('message-input').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    var messageInput = document.getElementById('message-input');
+    var message = messageInput.value.trim();
+    
+    if (message !== '') {
+        // Append user message to chat interface
+        appendMessage('user', message);
+
+        // Get and append bot response after a short delay
+        setTimeout(function() {
+            var botResponse = getBotResponse(message);
+            appendMessage('bot', botResponse);
+        }, 500);
+
+        // Clear input
+        messageInput.value = '';
+    }
+}
+
+function appendMessage(sender, message) {
+    var chatMessages = document.getElementById('chat-messages');
+    var messageElement = document.createElement('div');
+    messageElement.classList.add('message', sender + '-message');
+    messageElement.textContent = message;
+    chatMessages.appendChild(messageElement);
+
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showBotMessage(message) {
+    appendMessage('bot', message);
+}
+
+function getBotResponse(input) {
+    var responses = {
+        'hello': 'Hello there! How can I help you today?',
+        'hi': 'Hi! How can I assist you?',
+        'help': 'Sure, I am here to help. Please tell me what you need assistance with.',
+        'how are you': 'I am just a bot, but I am functioning as expected!',
+        'bye': 'Goodbye! Have a great day!',
+        'default': 'I am sorry, I do not understand. Can you please rephrase?'
+    };
+
+    var normalizedInput = input.trim().toLowerCase();
+    return responses[normalizedInput] || responses['default'];
+}
+
+// Function to validate email format
+function isValidEmail(email) {
+    var re = /\S+@\S+\.\S+/;
+    return re.test(email);
+}
+
+</script>
+
+</body>
+</html>

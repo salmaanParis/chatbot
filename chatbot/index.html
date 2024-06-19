@@ -13,7 +13,11 @@
 <i class="fab fa-facebook-messenger"></i>
 </label>
 <div class="wrapper">
-    <h5>Hi there - Online   <span class="status-dot"></span>&nbsp&nbsp(9:30am - 6:30pm)</h5>
+    <h5 id="welcome-message">Hi there👋 - Online<span class="status-dot"></span>&nbsp;&nbsp;<span id="online-time">(9:30am - 6:30pm)</span></h5>
+
+
+    <!-- <span id="close-popup-btn" onclick="closePopup()">X</span> -->
+</h5>
     <p>Please fill form below to start chatting with the next available agent.</p>
     <form id="chat-form">
         <input type="text" id="name" name="name" placeholder="Your Name" required>
@@ -74,16 +78,52 @@ document.getElementById('chat-form').addEventListener('submit', function(event) 
         document.getElementById('query-error').textContent = '';
     }
     
+  
     if (valid) {
         // Hide form and show chat interface
         document.getElementById('chat-form').style.display = 'none';
         document.querySelector('.wrapper > p').style.display = 'none';
         document.getElementById('conversation').style.display = 'block';
 
+        // Update welcome message to timer
+        var welcomeMessage = document.getElementById('welcome-message');
+        welcomeMessage.innerHTML = 'Chat session will end in <span id="countdown">2:00</span> minutes';
+        
+        // Start countdown timer
+        startTimer(2, 0); // 2 minutes timer
+
         // Show welcome message with user's name
         showBotMessage(`Hi ${name}! Welcome to our chat. How can I assist you today?`);
     }
 });
+
+function startTimer(minutes, seconds) {
+    var countdownElement = document.getElementById('countdown');
+    var totalSeconds = minutes * 60 + seconds;
+
+    var timerInterval = setInterval(function() {
+        var minutes = Math.floor(totalSeconds / 60);
+        var remainingSeconds = totalSeconds % 60;
+
+        countdownElement.textContent = `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+
+        if (totalSeconds <= 0) {
+            clearInterval(timerInterval);
+            endChatSession(); // End chat session function
+        } else {
+            totalSeconds--;
+        }
+    }, 1000); // Update every second
+}
+
+function endChatSession() {
+    // Optionally, you can add cleanup actions here if needed
+
+    // Example: Redirect to a thank you page or hide chat interface
+    document.getElementById('conversation').style.display = 'none';
+    document.getElementById('chat-form').style.display = 'block';
+    document.querySelector('.wrapper > p').style.display = 'block';
+}
 
 document.getElementById('send-message-btn').addEventListener('click', function() {
     sendMessage();
@@ -148,6 +188,27 @@ function isValidEmail(email) {
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
+
+// function closePopup() {
+//     // Optionally, you can add cleanup actions here if needed
+
+//     // Example: Hide the popup or chat interface
+//     document.getElementById('show').checked = false; // Uncheck the checkbox to hide the popup
+//     document.getElementById('chat-form').style.display = 'block'; // Show the chat form if hidden
+//     document.querySelector('.wrapper > p').style.display = 'block'; // Show the introductory text
+//     document.getElementById('conversation').style.display = 'none'; // Hide the chat conversation
+// }
+
+
+
+// Function to hide online time after 3 seconds
+setTimeout(function() {
+    var onlineTime = document.getElementById('online-time');
+    if (onlineTime) {
+        onlineTime.style.display = 'none';
+    }
+}, 5000); // 3000 milliseconds = 3 seconds
+
 
 </script>
 
